@@ -10,10 +10,12 @@ else
     /etc/init.d/$FPM restart 
 fi
 source ~/.bashrc
-for i in $(ls -l $appsDir/| grep '^d' | awk '{print $9}');do echo 'Fixing permissions for' $i; \
-chown -R $i:www-data $appsDir/$i/public_html; \
-find $appsDir/$i/public_html/ \
--type d -not -perm 775 -print0 | xargs -0 chmod 775; \
-find $appsDir/$i/public_html/ \
--type f -not -perm 664 -print0 | xargs -0 chmod 664 \
-; done
+for i in $(ls -l $appsDir/| grep '^d' | awk '{print $9}')
+do 
+    echo 'Fixing permissions for' $i 
+    chown -R $i:www-data $appsDir/$i/public_html
+    find $appsDir/$i/public_html/ \
+        -type d -not -perm 775 -print0 | xargs -0 chmod 775
+    find $appsDir/$i/public_html/ \
+        -type f -not -perm 664 -print0 | xargs -0 chmod 664
+done
