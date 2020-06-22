@@ -9,10 +9,10 @@ for i in $(ls -l $appsDir/| grep '^d' | awk '{print $9}');do echo 'Fixing permis
 chown -R $i:www-data $appsDir/$i/public_html; \
 find $appsDir/$i/public_html/ \
 \( \
--type d -not -perm 775 -exec chmod 775 {} \; \
+-type d -not -perm 775 -print0 | xargs -0 chmod 775 \
 \) \
 -or \
 \( \
--type f -not -perm 664 -exec chmod 664 {} \; \
+-type f -not -perm 664 -print0 | xargs -0 chmod 664 \
 \) \
 ; done
