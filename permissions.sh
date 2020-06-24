@@ -13,7 +13,7 @@ fi
 for i in $(ls -l $appsDir/| grep '^d' | awk '{print $9}')
 do 
     echo 'Fixing permissions for' $i 
-    chown -R $i:www-data $appsDir/$i/public_html                         # Setting ownership of files as to application users (Optional) 
+    chown -R $i:www-data $appsDir/$i/public_html                         # Setting ownership of everything under public_html to application user (Optional) 
     find $appsDir/$i/public_html/ \
         -type d -print0 | xargs -0 chmod 775                             # Correcting permissions for already files and directories
     find $appsDir/$i/public_html/ \
