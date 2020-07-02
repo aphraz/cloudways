@@ -1,7 +1,7 @@
 #!/bin/bash
 FPM=php$(php -v  | head -n 1 | cut -d " " -f2 | cut -d "." -f1,2)-fpm    # Getting PHP version
 appsDir=/home/master/applications
-if grep -q "UMask=0002" /lib/systemd/system/$FPM.service                 # Making sure the line is not added already
+if grep -q "UMask=0002" /lib/systemd/system/$FPM.service                 # Checking if the line is not added already
 then
     echo "The UMask is already added"                                    
 else
