@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cat << _EOF_ >> /etc/nginx/additional_server_conf
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 add_header Content-Security-Policy "frame-ancestors 'self';";
 add_header X-Frame-Options "SAMEORIGIN";
 add_header Referrer-Policy "no-referrer-when-downgrade";
