@@ -1,5 +1,5 @@
 #!/bin/bash
-cat << _EOF_ > /var/cw/systeam/.myvars
+/bin/cat << _EOF_ > /var/cw/systeam/.myvars
 function sett() {
   if [[ -z "$ORIG" ]]; then
     ORIG=$PS1
