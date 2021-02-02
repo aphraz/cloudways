@@ -9,4 +9,4 @@ function sett() {
 }
 _EOF_
 
-source /var/cw/systeam/.myvars
+. /var/cw/systeam/.myvars
