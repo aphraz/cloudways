@@ -5,7 +5,7 @@ if grep -q "UMask=0002" /lib/systemd/system/$FPM.service                 # Check
 then
     echo "The UMask is already added"                                    
 else
-    sed -i -e '/PIDFile/aUMask=0002' /lib/systemd/system/$FPM.service    # Setting appropriate Umask for PHP process
+    sed -i -e '/Type/aUMask=0002' /lib/systemd/system/$FPM.service    # Setting appropriate Umask for PHP process
     systemctl daemon-reload
     /etc/init.d/$FPM restart 
 fi
