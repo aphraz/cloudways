@@ -1,6 +1,6 @@
 #!/bin/bash
 
-read -p "Enter the app DB name: " APP
+read -p "Enter the app DB name: " APP <&1
 /usr/bin/awk '/set_real_ip/{print substr($NF, 1, length($NF)-1),"1;"}' \
 	/etc/nginx/proxies/* > /etc/nginx/proxies/waf-allowedIPs
 /bin/sed -i -e '1s|^|geo $realip_remote_addr $allowed {\
