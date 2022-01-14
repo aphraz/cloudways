@@ -1,5 +1,5 @@
-. /root/.bashrc
 sudo su
+. ~/.bashrc
 cd /home/$HOSTNAME/
 mkdir /var/cw/systeam/.vim-backup > /dev/null 2>&1
 cat <<- _EOF_ > /root/.vimrc
