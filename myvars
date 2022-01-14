@@ -1,12 +1,89 @@
-#!/bin/bash
-/bin/cat << _EOF_ > /var/cw/systeam/.myvars
-function sett() {
-  if [[ -z "\$ORIG" ]]; then
-    ORIG=\$PS1
-  fi
-  TITLE="\[\e]2;\$*\a\]"
-  PS1=\${ORIG}\${TITLE}
-}
+cd /home/$HOSTNAME/
+mkdir /var/cw/systeam/.vim-backup > /dev/null 2>&1
+cat <<- _EOF_ > /root/.vimrc
+set backup
+set backupdir=/var/cw/systeam/.vim-backup
+set writebackup
+set backupcopy=yes
+au BufWritePre * let &bex = '@' . strftime("%F-%H-%M")
 _EOF_
 
-. /var/cw/systeam/.myvars
+
+st() {
+  if [[ -z "$ORIG" ]]; then
+    ORIG=$PS1
+  fi
+  TITLE="\[\e]2;$*\a\]"
+  PS1=${ORIG}${TITLE}
+}
+
+app () {
+	local HOMEDIR=/home/$(hostname)
+	grep -lr "$(echo -e "$1" | sed -e 's|^[^/]*//| |' -e 's|/.*$||')" $HOMEDIR/*/conf | \
+	awk 'END{split($0,a,"/"); print a[4]}'
+	}
+wp () {
+	/usr/local/bin/wp --allow-root $@
+	}
+
+dns () {
+	host $(echo $1 | sed -e 's|^[^/]*//||' -e 's|/.*$||')
+	}
+
+master () {
+	su $(grep master /etc/passwd | head -n 1 | cut -d ":" -f1)
+	}
+
+fixperm() {
+	/usr/bin/curl -s https://raw.githubusercontent.com/aphraz/cloudways/master/permissions.sh?Sdsdads | /bin/bash
+	}
+
+slowlog() {
+	for PID in $(awk '{print}' php-app.access.log | sort -nbrk 12,12 |  \
+	head -n 20 | awk '{print $11}');do awk "/pid $PID/,/^$/" \
+	php-app.slow.log;done
+	}
+
+pidmem () {
+	gawk -v OFS="\t"  'BEGIN{printf("\n%s\t%s\n", "PID","Memory")} {SUM[$11] += $13} \
+	END {for (s in SUM) printf("%d\t%.2f %s\n", s,SUM[s]/1024/1024,"MB") | \
+	"sort -nbrk2,2 | head"}' php-app.access.log
+	}
+
+pidmemall () {
+	for A in $(ls -l /home/master/applications/| grep "^d" | gawk '{print $NF}'); do \
+	echo -e "\n" ; echo -e $A && gawk 'NR==1 {print substr($NF, 1, length($NF)-1)}' \
+	/home/master/applications/$A/conf/server.nginx; awk -v OFS="\t"  \
+	'BEGIN{printf("\n%s\t%s\n", "PID","Memory")} {SUM[$11] += $13} END {for (s in SUM) \
+	printf("%d\t%.2f %s\n", s,SUM[s]/1024/1024,"MB") | "sort -nbrk2,2 | head"}' \
+	/home/master/applications/$A/logs/php-app.access.log;done
+	}
+
+concurr () {
+	watch -xtn 1 awk '$2 ~ /:01BB|:0050/ {count +=1;} END {print "Concurrent Web Traffic: ",count}' /proc/net/tcp
+	}
+
+list-restore () {
+	for i in $(ls -l /home/master/applications/| grep "^d" | awk '{print $NF}'); do \
+	echo Application: $i;/var/cw/scripts/bash/duplicity_restore.sh --src $i -c; done
+	}
+
+reset-services () {
+	/etc/init.d/nginx restart
+	/etc/init.d/varnish restart
+	/etc/init.d/apache2 restart
+	/etc/init.d/php$(php -v  | head -n 1 | cut -d " " -f2 | cut -d "." -f1,2)-fpm restart
+	/etc/init.d/mysql restart
+	/etc/init.d/memcached restart
+	/etc/init.d/redis-server restart 2> /dev/null
+	} 
+
+sqlvars () {
+	mysqladmin variables | tr -d " " | awk -F'|' '{print $2 " = " $3}'
+	}
+
+cleanup () {
+	rm -f /root/.vimrc
+	find /var/cw/systeam/.vim-backup/ -type f -mtime +7 -delete
+	}
+trap cleanup EXIT
