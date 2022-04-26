@@ -8,16 +8,16 @@ _blue=$(tput setaf 38)
 _reset=$(tput sgr0)
 
 
-function _success()
+function _success ()
 {
 	printf '%s✔ %s%s\n' "$_green" "$@" "$_reset"
 }
 
-function _error() {
+function _error () {
     printf '%s✖ %s%s\n' "$_red" "$@" "$_reset"
 }
 
-function _note()
+function _note ()
 {
     printf '%s%s%sNote:%s %s%s%s\n' "$_underline" "$_bold" "$_blue" "$_reset" "$_blue" "$@" "$_reset"
 }
