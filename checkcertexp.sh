@@ -6,7 +6,7 @@ _red=$(tput setaf 1)
 _green=$(tput setaf 76)
 _blue=$(tput setaf 38)
 _reset=$(tput sgr0)
-
+export TERM=xterm-256color
 
 function _success ()
 {
