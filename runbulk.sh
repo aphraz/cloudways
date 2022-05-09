@@ -1,7 +1,7 @@
 #!/bin/bash
-read -p "Enter customer's primary email: " email
-read -p "Enter the API key: " apikey
-read -p "Enter the command to run: " runbulk
+read -p "Enter customer's primary email: " email <&1
+read -p "Enter the API key: " apikey <&1
+read -p "Enter the command to run: " runbulk <&1
 ipfile="$1"
 echo -e "Retrieving Access Token"
 
