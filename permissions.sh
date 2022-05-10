@@ -10,7 +10,7 @@ else
     /etc/init.d/$FPM restart 
 fi
 
-for i in $(ls -l $appsDir/| grep '^d' | awk '{print $9}')
+for i in $(ls -l $appsDir/ | awk '/^d/ {print $9}')
 do 
     echo 'Fixing permissions for' $i 
     chown -R $i:www-data $appsDir/$i/public_html                                        # Setting ownership of everything under public_html to application user (Optional) 
