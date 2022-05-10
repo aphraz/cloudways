@@ -15,7 +15,7 @@ do
     echo 'Fixing permissions for' $i 
     chown -R $i:www-data $appsDir/$i/public_html                                        # Setting ownership of everything under public_html to application user (Optional) 
     find $appsDir/$i/public_html/ \
-        -type d -not -perm 775 -print0 | xargs -0 chmod 775 2> /dev/null                            # Correcting permissions for already existing files and directories
+        -type d -not -perm 775 -print0 | xargs -0 -P 20 chmod 775 2> /dev/null                            # Correcting permissions for already existing files and directories
     find $appsDir/$i/public_html/ \
-        -type f -not -perm 664 -print0 | xargs -0 chmod 664 2> /dev/null
+        -type f -not -perm 664 -print0 | xargs -0 -P 20 chmod 664 2> /dev/null
 done
