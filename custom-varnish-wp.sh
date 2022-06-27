@@ -17,4 +17,4 @@ for app in $(ls -l $APP_DIR/| awk '/^d/ {print $NF}');
 		fi
 	done
 echo "Total WP/WC app processed: $count"
-/etc/init.d/varnish restar
+/etc/init.d/varnish restart
