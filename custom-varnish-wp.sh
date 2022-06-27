@@ -13,7 +13,7 @@ for app in $(ls -l $APP_DIR/| awk '/^d/ {print $NF}');
 			_EOF_
 			count=$((count+1))
 		else
-			echo "The app is $app_type"
+			echo "App $app is $app_type. Skipping..."
 		fi
 	done
 echo "Total WP/WC app processed: $count"
