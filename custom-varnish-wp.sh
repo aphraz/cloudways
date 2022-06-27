@@ -12,7 +12,7 @@ for app in $(ls -l /home/master/applications/| awk '/^d/ {print $NF}');
 			}
 			_EOF_
 		else
-			echo "The app is $app_type"
+			echo "App $app is $app_type. Skipping..."
 		fi
 	done
 /etc/init.d/varnish restart
