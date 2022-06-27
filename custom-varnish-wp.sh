@@ -1,5 +1,5 @@
 #!/bin/bash
-
+count=0
 APP_DIR="/home/$HOSTNAME"
 for app in $(ls -l /home/master/applications/| awk '/^d/ {print $NF}');
 	do
@@ -11,8 +11,10 @@ for app in $(ls -l /home/master/applications/| awk '/^d/ {print $NF}');
 			return (pipe);
 			}
 			_EOF_
+			count=$((count+1))
 		else
-			echo "App $app is $app_type. Skipping..."
+			echo "The app is $app_type"
 		fi
 	done
-/etc/init.d/varnish restart
+echo "Total WP/WC app processed: $count"
+/etc/init.d/varnish restar
