@@ -38,7 +38,7 @@ sub main
 	}
 	close(IN);
 	close(OUT);
-	exec("del $src_filename . .bak");
+	exec("rm '$src_filename.bak'");
 
 }
 
