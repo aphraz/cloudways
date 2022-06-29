@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-#my $src_filename = $ARGV[0];
-my $src_filename = <STDIN>;
+my $src_filename = $ARGV[0];
+#my $src_filename = <STDIN>;
 rename($src_filename,$src_filename . '.bak');
 my $dest_filename = $src_filename;
 
