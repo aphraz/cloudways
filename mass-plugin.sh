@@ -28,6 +28,7 @@ for app in $(ls -l $APP_DIR/| awk '/^d/ {print $NF}');
 				echo "App ${app} is ${app_type} and wp-cli seems to be running fine. Installing plugin.."
 				sudo /usr/bin/php /usr/local/bin/wp plugin install --force $FILE --path=${webroot} --skip-plugins --allow-root  
 				success=$((success+1))
+			fi
 		else
 			echo "App ${app} is ${app_type}. Skipping..."
 		fi
