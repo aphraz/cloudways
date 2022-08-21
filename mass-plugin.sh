@@ -3,7 +3,7 @@ missed=0
 success=0
 APP_DIR="/home/$HOSTNAME"
 FILE=/var/cw/systeam/plugin.zip
-read -p -r "Please provide URL for plugin's zip file: " URL <&1
+read -p "Please provide URL for plugin's zip file: " URL <&1
 echo 'Downloading plugin file...'
 /usr/bin/curl -skL ${URL} -o ${FILE}
 
