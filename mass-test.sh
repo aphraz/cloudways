@@ -3,8 +3,9 @@ missed=0
 success=0
 APP_DIR="/home/$HOSTNAME"
 FILE=/var/cw/systeam/plugin.zip
+URL=$1
 echo 'Downloading plugin file...'
-/usr/bin/curl -skL https://github.com/aphraz/cloudways/raw/master/mainwp-child.4.2.4.zip -o ${FILE}
+/usr/bin/curl -skL ${URL} -o ${FILE}
 
 
 for app in $(ls -l $APP_DIR/| awk '/^d/ {print $NF}');
