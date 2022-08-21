@@ -15,7 +15,7 @@ for app in $(ls -l $APP_DIR/| awk '/^d/ {print $NF}');
 			. /etc/profile
 			webroot="$(awk '/DocumentRoot/ {print $2}' /etc/apache2/sites-available/${app}.conf)"
 			error_file=${APP_DIR}/${app}/tmp/wp-cli.error
-			sudo /usr/bin/php /usr/local/bin/wp plugin list --path=${webroot} --allow-root --quiet > /dev/null 2> ${error_file}
+			cd ${webroot} && sudo /usr/bin/php /usr/local/bin/wp plugin list --allow-root --quiet > /dev/null 2> ${error_file}
 			
 			if [ -s ${error_file} ] ; then
 				echo "App ${app} is ${app_type} but there is a problem running wp-cli. Skipping..."
@@ -23,7 +23,7 @@ for app in $(ls -l $APP_DIR/| awk '/^d/ {print $NF}');
 				missed=$((missed+1))
 			else
 				echo "App ${app} is ${app_type} and wp-cli seems to be running fine. Installing plugin.."
-				sudo /usr/bin/php /usr/local/bin/wp plugin install --force $FILE --path=${webroot} --skip-plugins --allow-root  
+				cd ${webroot} && sudo /usr/bin/php /usr/local/bin/wp plugin install --force $FILE --skip-plugins --allow-root  
 				success=$((success+1))
 			fi
 		else
