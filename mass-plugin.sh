@@ -1,4 +1,5 @@
 #!/bin/bash
+. /etc/profile
 missed=0
 success=0
 APP_DIR="/home/$HOSTNAME"
