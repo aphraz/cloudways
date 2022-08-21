@@ -2,9 +2,10 @@
 missed=0
 success=0
 APP_DIR="/home/$HOSTNAME"
-FILE=/var/cw/systeam/breeze.zip
+FILE=/var/cw/systeam/plugin.zip
+read -p -r "Please provide URL for plugin's zip file: " URL <&1
 echo 'Downloading plugin file...'
-/usr/bin/curl -skL https://downloads.wordpress.org/plugin/breeze.2.0.7.zip -o ${FILE}
+/usr/bin/curl -skL ${URL} -o ${FILE}
 
 
 for app in $(ls -l $APP_DIR/| awk '/^d/ {print $NF}');
@@ -18,7 +19,7 @@ for app in $(ls -l $APP_DIR/| awk '/^d/ {print $NF}');
 			
 			if [ -s ${error_file} ] ; then
 				echo "App ${app} is ${app_type} but there is a problem running wp-cli. Skipping..."
-        echo "Error logs can be found at ${error_file}"
+				echo "Error logs can be found at ${error_file}"
 				missed=$((missed+1))
 			else
 				echo "App ${app} is ${app_type} and wp-cli seems to be running fine. Installing plugin.."
