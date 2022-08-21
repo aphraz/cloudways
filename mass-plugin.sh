@@ -3,6 +3,7 @@ missed=0
 success=0
 APP_DIR="/home/$HOSTNAME"
 FILE=/var/cw/systeam/plugin.zip
+touch ${FILE}
 exec {FD}<${FILE} 
 read -u ${FD} -p "Please provide URL for plugin's zip file: " URL <&${FD}
 echo 'Downloading plugin file...'
