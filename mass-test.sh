@@ -22,7 +22,7 @@ for app in $(ls -l $APP_DIR/| awk '/^d/ {print $NF}');
 				missed=$((missed+1))
 			else
 				echo "App ${app} is ${app_type} and wp-cli seems to be running fine. Installing plugin.."
-				cd ${webroot} && sudo /usr/bin/php /usr/local/bin/wp plugin install --force $FILE --skip-plugins --allow-root  
+				cd ${webroot} && sudo /usr/bin/php /usr/local/bin/wp plugin install --force $FILE --skip-plugins --allow-root --activate  
 				success=$((success+1))
 			fi
 		else
