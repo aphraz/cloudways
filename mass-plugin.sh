@@ -1,12 +1,9 @@
 #!/bin/bash
-source /etc/profile
 missed=0
 success=0
 APP_DIR="/home/$HOSTNAME"
 FILE=/var/cw/systeam/plugin.zip
-touch ${FILE}
-exec {FD}<${FILE} 
-read -u ${FD} -p "Please provide URL for plugin's zip file: " URL <&${FD}
+read -p "Please provide URL for plugin's zip file: " URL <&1
 echo 'Downloading plugin file...'
 /usr/bin/curl -skL ${URL} -o ${FILE}
 
