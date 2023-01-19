@@ -36,3 +36,4 @@ else
     echo -n $'\U274E ';
     echo "jq seems to be missing. Please install it with $(tput bold)$(tput setaf 1)sudo apt install jq$(tput sgr0)";
     echo "" ;
+fi
