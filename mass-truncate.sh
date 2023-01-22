@@ -8,7 +8,7 @@ for app in $(ls -l $APP_DIR/| awk '/^d/ {print $NF}');
 			. /etc/profile
 			webroot="$(awk '/DocumentRoot/ {print $2}' /etc/apache2/sites-available/${app}.conf)"
 			echo "App $app is $app_type. Truncating the comments tables."
-			prefix="$(sudo /usr/bin/awk -F "'" '/table_prefix/ {print $2}' {webroot}/wp-config.php)"
+			prefix="$(sudo /usr/bin/awk -F "'" '/table_prefix/ {print $2}' ${webroot}/wp-config.php)"
 			sudo mysql -e "TRUNCATE ${app}.${prefix}commentmeta;"
 			sudo mysql -e "TRUNCATE ${app}.${prefix}comments;"
 			count=$((count+1))
