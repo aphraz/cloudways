@@ -34,8 +34,8 @@ for plugin in $plugins; do
 
   # If there are log entries, print them and update the count for the plugin
   if [ -n "$log_entries" ]; then
-    echo "Entries for plugin $plugin:"
-    echo "$log_entries"
+    #echo "Entries for plugin $plugin:"
+    #echo "$log_entries"
     echo ""
     for entry in $log_entries; do
       (( plugin_counts[$plugin]++ ))
