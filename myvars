@@ -1,12 +1,32 @@
-cd /home/$HOSTNAME/
+HOMEDIR=/home/$HOSTNAME
+cd $HOMEDIR
+readarray -t applist < <(ls -l $HOMEDIR/| awk '/^d/ {print $NF}')
+
 mkdir /var/cw/systeam/.vim-backup > /dev/null 2>&1
 cat <<- _EOF_ > /root/.vimrc
 set backup
 set backupdir=/var/cw/systeam/.vim-backup
 set writebackup
 set backupcopy=yes
-au BufWritePre * let &bex = '@' . strftime("%F-%H-%M")
+au BufWritePre * let &bex ='_at_' . strftime("%F-%H-%M")
 _EOF_
+
+#au BufWritePre * let &bex = '@' . strftime("%F-%H-%M")
+magerun () {
+  FILE="/usr/bin/n98-magerun2"
+  if [[ -s $FILE ]]; then
+      /usr/bin/n98-magerun2 "$@" --skip-root-check
+  else
+      echo "Program is not installed.. Installing now..."
+      curl -sS -O https://files.magerun.net/n98-magerun2-latest.phar && chmod +x n98-magerun2-latest.phar
+	if [[ $(echo $?) == '0' ]]; then
+      		mv n98-magerun2-latest.phar /usr/bin/n98-magerun2
+      		/usr/bin/n98-magerun2 "$@" --skip-root-check
+	else
+		echo "Automatic install failed. Please install manually."
+	fi
+  fi
+  }
 
 
 st() {
@@ -17,17 +37,24 @@ st() {
   PS1=${ORIG}${TITLE}
 }
 
+rpl() {
+    array=($@)
+    len=${#array[@]}
+    _original=$1
+    _replacement=${array[@]:1:$len}
+    fc -s "$_original=$_replacement"
+}
 app () {
-	local HOMEDIR=/home/$(hostname)
 	grep -lr "$(echo -e "$1" | sed -e 's|^[^/]*//| |' -e 's|/.*$||')" $HOMEDIR/*/conf | \
 	awk 'END{split($0,a,"/"); print a[4]}'
 	}
+
 wp () {
-	/usr/local/bin/wp --allow-root $@
+	/usr/local/bin/wp "$@" --allow-root
 	}
 
-dns () {
-	host $(echo $1 | sed -e 's|^[^/]*//||' -e 's|/.*$||')
+host () {
+	/usr/bin/host $(echo $1 | sed -e 's|^[^/]*//||' -e 's|/.*$||')
 	}
 
 master () {
@@ -35,55 +62,198 @@ master () {
 	}
 
 fixperm() {
-	/usr/bin/curl -s https://raw.githubusercontent.com/aphraz/cloudways/master/permissions.sh?Sdsdads | /bin/bash
+FPM=php$(php -v  | head -n 1 | cut -d " " -f2 | cut -d "." -f1,2)-fpm
+appsDir=/home/master/applications
+if grep -q "UMask=0002" /lib/systemd/system/$FPM.service
+then
+    echo "The UMask is already added"                                    
+else
+    sed -i -e '/[Service]/aUMask=0002' /lib/systemd/system/$FPM.service
+    systemctl daemon-reload
+    /etc/init.d/$FPM restart 
+fi
+	#/usr/bin/curl -s https://raw.githubusercontent.com/aphraz/cloudways/master/permissions.sh?Sdsdads | /bin/bash
+if [ $# -eq 0 ]; then
+                for i in $(ls -l $HOMEDIR/| awk '/^d/ {print $NF}')
+                do
+                        echo -e "\nFixing permissions for: $i"
+                        chown -R $i:www-data $HOMEDIR/$i/public_html
+                        find $HOMEDIR/$i/public_html/ \
+                        \( -type d -not -perm 775 -exec chmod 775 {} + \) \
+                        -or \
+                        \( -type f -not -perm 664 -exec chmod 664 {} + \)
+                done
+else
+		for args in "$@"
+                do
+                        cl_args=${args%/}
+                        if app_exist "${applist[*]}" "$cl_args"; then
+				echo -e "\nFixing permissions for: $cl_args"
+                          	chown -R $i:www-data $HOMEDIR/$cl_args/public_html
+                          	find $HOMEDIR/$cl_args/public_html/ \
+                          	\( -type d -not -perm 775 -exec chmod 775 {} + \) \
+                          	-or \
+                          	\( -type f -not -perm 664 -exec chmod 664 {} + \)
+			else
+				echo ""
+				echo -n $'\U274E '
+				echo "There seems to be no app by the name, $cl_args.."
+				echo "Available apps are: ${applist[*]}"
+			fi
+
+                done
+fi	
 	}
 
 slowlog() {
-	for PID in $(awk '{print}' php-app.access.log | sort -nbrk 12,12 |  \
-	head -n 20 | awk '{print $11}');do awk "/pid $PID/,/^$/" \
-	php-app.slow.log;done
+	if [ $# -eq 0 ]; then
+	     echo -n $'\U274E '
+	     echo '[WARN] You did not provide any app.'
+	     echo "Available apps are: ${applist[*]}"
+	else
+	    for args in "$@"
+        	do
+          	  cl_args=${args%/}
+          	  if app_exist "${applist[*]}" "$cl_args"; then
+                    echo ""
+            	    echo -e "App: $cl_args"
+	    	    gawk 'NR==1 {print substr($NF, 1, length($NF)-1)}' $HOMEDIR/$cl_args/conf/server.nginx
+            	    for PID in $(gawk '{print}' $HOMEDIR/$cl_args/logs/php-app.access.log | sort -nbrk 12,12 |  \
+		    head| gawk '{print $11}')
+			do 
+			  gawk "/pid $PID/,/^$/" $HOMEDIR/$cl_args/logs/php-app.slow.log
+			done
+		  else
+		    echo ""
+		    echo -n $'\U274E '
+		    echo "There seems to be no app by the name, $cl_args.."
+		    echo "Available apps are: ${applist[*]}"
+		  fi
+		done
+	fi
 	}
 
 pidmem () {
-	gawk -v OFS="\t"  'BEGIN{printf("\n%s\t%s\n", "PID","Memory")} {SUM[$11] += $13} \
-	END {for (s in SUM) printf("%d\t%.2f %s\n", s,SUM[s]/1024/1024,"MB") | \
-	"sort -nbrk2,2 | head"}' php-app.access.log
-	}
-
-pidmemall () {
-	for A in $(ls -l /home/master/applications/| grep "^d" | gawk '{print $NF}'); do \
-	echo -e "\n" ; echo -e $A && gawk 'NR==1 {print substr($NF, 1, length($NF)-1)}' \
-	/home/master/applications/$A/conf/server.nginx; awk -v OFS="\t"  \
-	'BEGIN{printf("\n%s\t%s\n", "PID","Memory")} {SUM[$11] += $13} END {for (s in SUM) \
-	printf("%d\t%.2f %s\n", s,SUM[s]/1024/1024,"MB") | "sort -nbrk2,2 | head"}' \
-	/home/master/applications/$A/logs/php-app.access.log;done
+	if [ $# -eq 0 ]; then
+	  for A in $(ls -l $HOMEDIR/| gawk '/^d/ {print $NF}'); 
+	    do
+		echo ""
+		echo -e "App: $A" 
+		gawk 'NR==1 {print substr($NF, 1, length($NF)-1)}' $HOMEDIR/$A/conf/server.nginx
+		gawk -v OFS="\t"  \
+		'BEGIN{printf("\n%s\t%s\n", "PID","Memory")} {SUM[$11] += $13} END {for (s in SUM) \
+		printf("%d\t%.2f %s\n", s,SUM[s]/1024/1024,"MB") | "sort -nbrk2,2 | head"}' \
+		$HOMEDIR/$A/logs/php-app.access.log
+	    done
+	else
+	    for args in "$@"
+                do
+                    cl_args=${args%/}
+                    if app_exist "${applist[*]}" "$cl_args"; then
+                     	echo "" 
+                     	echo -e "App: $cl_args"
+                     	gawk 'NR==1 {print substr($NF, 1, length($NF)-1)}' $HOMEDIR/$cl_args/conf/server.nginx
+                     	gawk -v OFS="\t"  \
+			'BEGIN{printf("\n%s\t%s\n", "PID","Memory")} {SUM[$11] += $13} END {for (s in SUM) \
+			printf("%d\t%.2f %s\n", s,SUM[s]/1024/1024,"MB") | "sort -nbrk2,2 | head"}' \
+			$HOMEDIR/$cl_args/logs/php-app.access.log
+	 	    else				
+	 		echo ""
+			echo -n $'\U274E '
+			echo "There seems to be no app by the name, $cl_args.."
+			echo "Available apps are: ${applist[*]}"
+	            fi
+		done
+	fi
 	}
 
 concurr () {
 	watch -xtn 1 awk '$2 ~ /:01BB|:0050/ {count +=1;} END {print "Concurrent Web Traffic: ",count}' /proc/net/tcp
 	}
 
+app_exist () {
+APPS=$1
+VALUE=$2
+echo $APPS| tr ' ' '\n' | grep -x -q -F "$VALUE"
+}
+
 list-restore () {
-	for i in $(ls -l /home/master/applications/| grep "^d" | awk '{print $NF}'); do \
-	echo Application: $i;/var/cw/scripts/bash/duplicity_restore.sh --src $i -c; done
-	}
+
+if [ $# -eq 0 ]; then
+                for i in $(ls -l /home/master/applications/| awk '/^d/ {print $NF}')
+                do
+                        echo -e "\nApp: $i"
+                        /var/cw/scripts/bash/duplicity_restore.sh --src $i -c
+                done
+else
+		for args in "$@"
+                do
+                        cl_args=${args%/}
+                        if app_exist "${applist[*]}" "$cl_args"; then
+				echo -e "\nApp: $cl_args"
+                          	/var/cw/scripts/bash/duplicity_restore.sh --src $cl_args -c
+			else
+				echo ""
+				echo -n $'\U274E '
+				echo "There seems to be no app by the name, $cl_args.."
+				echo "Available apps are: ${applist[*]}"
+			fi
+
+                done
+fi
+        }
+
 
 reset-services () {
 	/etc/init.d/nginx restart
 	/etc/init.d/varnish restart
 	/etc/init.d/apache2 restart
-	/etc/init.d/php$(php -v  | head -n 1 | cut -d " " -f2 | cut -d "." -f1,2)-fpm restart
+	/etc/init.d/$(php -v | awk '{print "php"substr($2,1,3)"-fpm";exit}') restart
+	#/etc/init.d/php$(php -v  | head -n 1 | cut -d " " -f2 | cut -d "." -f1,2)-fpm restart
 	/etc/init.d/mysql restart
 	/etc/init.d/memcached restart
 	/etc/init.d/redis-server restart 2> /dev/null
+	} 
+status-services () {
+	echo "$(tput bold)$(tput setaf 1)Nginx:$(tput sgr0)"
+	/etc/init.d/nginx status | awk '/Active/ {$1="";print $0}'
+	echo "$(tput bold)$(tput setaf 1)Varnish:$(tput sgr0)"
+	systemctl status varnish | awk '/Active/ {$1="";print $0}'
+	echo "$(tput bold)$(tput setaf 1)Apache:$(tput sgr0)"
+	/etc/init.d/apache2 status | awk '/Active/ {$1="";print $0}'
+	echo "$(tput bold)$(tput setaf 1)PHP-FPM:$(tput sgr0)"
+	/etc/init.d/$(php -v | awk '{print "php"substr($2,1,3)"-fpm";exit}') status | awk '/Active/ {$1="";print $0}'
+	echo "$(tput bold)$(tput setaf 1)MySQL/MariaDB:$(tput sgr0)"
+	/etc/init.d/mysql status | awk '/Active/ {$1="";print $0}'
+	echo "$(tput bold)$(tput setaf 1)Memcache:$(tput sgr0)"
+	/etc/init.d/memcached status | awk '/Active/ {$1="";print $0}'
+	echo "$(tput bold)$(tput setaf 1)Redis:$(tput sgr0)"
+	( /etc/init.d/redis-server status | awk '/Active/ {$1="";print $0}' ) 2> /dev/null
 	} 
 
 sqlvars () {
 	mysqladmin variables | tr -d " " | awk -F'|' '{print $2 " = " $3}'
 	}
+apptype () {
+	awk '/server_name/ {split($2,a,"-") ; print a[1]; exit}' $HOMEDIR/$1/conf/server.nginx
+	}
+
+rm () {
+array=( $@ )
+FOUND="0"
+for flags in "${!array[@]}"
+do
+        if [[ "${array[$flags]}" =~ ^-[rd]?f ]]; then
+                FOUND="1"
+                array[$flags]="${array[$flags]/f/I}"
+		break
+        fi
+done
+[[ "$FOUND" == "1" ]] && /bin/rm ${array[*]} || /bin/rm "$@"
+        } 
 
 cleanup () {
 	rm -f /root/.vimrc
-	find /var/cw/systeam/.vim-backup/ -type f -mtime +7 -delete
+	find /var/cw/systeam/.vim-backup/ -type f -mtime +30 -delete
 	}
 trap cleanup EXIT
