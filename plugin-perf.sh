@@ -44,7 +44,8 @@ for plugin in $plugins; do
 done
 
 # Print the top N plugins with the highest counts
-echo "Top plugins by count:"
+echo "Top 10 Plugins in Slow Logs"
+echo "____________________________"
 for plugin in "${!plugin_counts[@]}"; do
-  echo "${plugin_counts[$plugin]} $plugin"
+  echo -e "${plugin_counts[$plugin]} \t $plugin"
 done | sort -rn | head -n 10
