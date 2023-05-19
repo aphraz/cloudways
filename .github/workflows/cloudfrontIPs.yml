@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Check and update IPs
+      - name: Check and update IPs List
         run: |
           # Fetch the IP list from the URL
           IP_LIST=$(curl -s https://d7uri8nf7uskq.cloudfront.net/tools/list-cloudfront-ips)
