@@ -34,4 +34,4 @@ jobs:
           cd cloudways
           git add cloudfront-realip.conf
           git commit -m "Update IP configuration"
-          git push "$REPO_URL" HEAD:main
+          git push origin 
