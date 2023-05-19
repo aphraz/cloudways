@@ -24,8 +24,8 @@ jobs:
           echo -e "$CONFIG" > cloudfront-realip.conf
 
           # Configure git
-          git config --global user.name "aphraz"
-          git config --global user.email "aphraz@live.com"
+          git config --global user.name "Afraz Ahmed"
+          git config --global user.email "aphraz@users.noreply.github.com"
 
           # Commit and push changes to the public GitHub repository
           REPO_URL="https://github.com/aphraz/cloudways.git"
@@ -34,4 +34,4 @@ jobs:
           cd cloudways
           git add cloudfront-realip.conf
           git commit -m "Update IP configuration"
-          git push origin 
+          git push
