@@ -2,7 +2,7 @@ name: IP Check and Update
 
 on:
   schedule:
-    - cron: "55 15 * * *"
+    - cron: "0 20 * * *"
 
 jobs:
   update-ips:
@@ -10,6 +10,7 @@ jobs:
 
     steps:
       - name: Check and update IPs
+      - uses: actions/checkout@v3
         run: |
           # Fetch the IP list from the URL
           IP_LIST=$(curl -s https://d7uri8nf7uskq.cloudfront.net/tools/list-cloudfront-ips)
@@ -28,10 +29,10 @@ jobs:
           git config --global user.email "aphraz@live.com"
 
           # Commit and push changes to the public GitHub repository
-          REPO_URL="https://github.com/aphraz/cloudways.git"
-          git clone "$REPO_URL"
-          mv cloudfront-realip.conf cloudways
-          cd cloudways
+          #REPO_URL="https://github.com/aphraz/cloudways.git"
+          #git clone "$REPO_URL"
+          #mv cloudfront-realip.conf cloudways
+          #cd cloudways
           git add cloudfront-realip.conf
           git commit -m "Update IP configuration"
           git push
