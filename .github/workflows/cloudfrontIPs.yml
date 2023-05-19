@@ -30,6 +30,7 @@ jobs:
           # Commit and push changes to the public GitHub repository
           REPO_URL="https://github.com/aphraz/cloudways.git"
           git clone "$REPO_URL"
+          mv cloudfront-realip.conf cloudways
           cd cloudways
           git add cloudfront-realip.conf
           git commit -m "Update IP configuration"
