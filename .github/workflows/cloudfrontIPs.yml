@@ -3,6 +3,8 @@ name: IP Check and Update
 on:
   schedule:
     - cron: "0 20 * * *"
+  push:
+    branches: [ master ]
 
 jobs:
   update-ips:
@@ -11,7 +13,7 @@ jobs:
     steps:
       - name: Check and update IPs
       - uses: actions/checkout@v3
-        run: |
+      - run: |
           # Fetch the IP list from the URL
           IP_LIST=$(curl -s https://d7uri8nf7uskq.cloudfront.net/tools/list-cloudfront-ips)
 
