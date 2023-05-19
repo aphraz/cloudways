@@ -2,7 +2,7 @@ name: IP Check and Update
 
 on:
   schedule:
-    - cron: "40 15 * * *"
+    - cron: "55 15 * * *"
 
 jobs:
   update-ips:
