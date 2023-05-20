@@ -1,4 +1,4 @@
-name: IP Check and Update
+name: IP Check and Update Cloudfront IPs
 
 on:
   schedule:
@@ -14,6 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Check and update IPs List
+        id: update
         run: |
           # Fetch the IP list from the URL
           IP_LIST=$(curl -s https://d7uri8nf7uskq.cloudfront.net/tools/list-cloudfront-ips)
@@ -24,18 +25,19 @@ jobs:
             CONFIG+="set_real_ip_from $IP;\n"
           done
 
-          # Create or update the IP configuration file
-          echo -e "$CONFIG" > cloudfront-realip.conf
+          # Check if the downloaded IP configuration file is different
+          if [[ ! -f cloudfront-realip.conf || "$(cat cloudfront-realip.conf)" != "$CONFIG" ]]; then
+            # Create or update the IP configuration file
+            echo -e "$CONFIG" > cloudfront-realip.conf
 
-          # Configure git
-          git config --global user.name "Afraz Ahmed"
-          git config --global user.email "aphraz@live.com"
+            # Configure git
+            git config --global user.name "Afraz Ahmed"
+            git config --global user.email "aphraz@live.com"
 
-          # Commit and push changes to the public GitHub repository
-          #REPO_URL="https://github.com/aphraz/cloudways.git"
-          #git clone "$REPO_URL"
-          #mv cloudfront-realip.conf cloudways
-          #cd cloudways
-          git add cloudfront-realip.conf
-          git commit -m "Update IP configuration"
-          git push
+            # Commit and push changes to the public GitHub repository
+            git add cloudfront-realip.conf
+            git diff-index --quiet HEAD || git commit -m "Update IP configuration" && git push
+          else
+            echo "No changes found. Skipping commit and push."
+          fi
+
