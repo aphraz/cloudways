@@ -89,7 +89,7 @@ else
                         cl_args=${args%/}
                         if app_exist "${applist[*]}" "$cl_args"; then
 				echo -e "\nFixing permissions for: $cl_args"
-                          	chown -R $i:www-data $HOMEDIR/$cl_args/public_html
+                          	chown -R $cl_args:www-data $HOMEDIR/$cl_args/public_html
                           	find $HOMEDIR/$cl_args/public_html/ \
                           	\( -type d -not -perm 775 -exec chmod 775 {} + \) \
                           	-or \
