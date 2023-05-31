@@ -168,7 +168,7 @@ pidmem () {
 	}
 
 concurr () {
-	watch -xtn 1 awk '$2 ~ /:01BB|:0050/ {count +=1;} END {print "Concurrent Web Traffic: ",count}' /proc/net/tcp
+	watch -xtn 0.5 awk '$2 ~ /:0050|:01BB/ && $4 ~ /01/ {count +=1;} END {print "Concurrent Web Connections: ",count}' /proc/net/tcp
 	}
 
 app_exist () {
