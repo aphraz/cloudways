@@ -1,3 +1,4 @@
+alias lp='ls -lrt -d -1 "$PWD"/{*,.*}'
 HOMEDIR=/home/$HOSTNAME
 cd $HOMEDIR
 readarray -t applist < <(ls -l $HOMEDIR/| awk '/^d/ {print $NF}')
