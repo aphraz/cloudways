@@ -51,7 +51,7 @@ app () {
 	}
 
 wp () {
-	/usr/local/bin/wp "$@" --allow-root
+	sudo --user="$(stat -c '%U' .)" /usr/local/bin/wp "$@"
 	}
 
 host () {
