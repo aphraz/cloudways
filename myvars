@@ -22,7 +22,7 @@ pastebin() {
             ;;
         "post")
             content=$(cat)
-            curl -X POST -Fc="$content" -Fe="$2" -Fn="$3" -Fs="$4" -Fp="$5" "${BASE_URL}"
+            curl -X POST -Fc="$content" -Fe="$3" -Fn="$2" -Fs="$4" -Fp="$5" "${BASE_URL}"
             ;;
         *)
             echo "Invalid command"
