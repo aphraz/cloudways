@@ -16,6 +16,7 @@ _EOF_
 
 pastebin() {
     BASE_URL="https://pastebin.afraz.dev"
+    local 
     case $1 in
         "get")
             curl -s "${BASE_URL}/$2"
