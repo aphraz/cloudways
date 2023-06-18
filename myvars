@@ -12,7 +12,6 @@ set backupcopy=yes
 au BufWritePre * let &bex ='_at_' . strftime("%F-%H-%M")
 _EOF_
 
-#au BufWritePre * let &bex = '@' . strftime("%F-%H-%M")
 
 pastebin() {
     BASE_URL="https://pastebin.afraz.dev"
