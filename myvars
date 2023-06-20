@@ -18,11 +18,11 @@ pastebin() {
     local UAGENT="AFRAZ AHMED" 
     case $1 in
         "get")
-            curl -s -H "User-Agent: ${UAGENT}" "${BASE_URL}/$2"
+            curl -s -H "User-Agent: '${UAGENT}'" "${BASE_URL}/$2"
             ;;
         "post")
             content=$(cat)
-            curl -H "User-Agent: ${UAGENT}" -X POST -Fc="$content" -Fe="$3" -Fn="$2" -Fs="$4" "${BASE_URL}"
+            curl -H "User-Agent: '${UAGENT}'" -X POST -Fc="$content" -Fe="$3" -Fn="$2" -Fs="$4" "${BASE_URL}"
             ;;
         *)
             echo "Invalid command"
