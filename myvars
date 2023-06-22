@@ -13,6 +13,21 @@ au BufWritePre * let &bex ='_at_' . strftime("%F-%H-%M")
 _EOF_
 
 
+mkcd () {
+	last=$(eval "echo \$$#")
+	if [ ! -n "$last" ]; then
+		echo "Enter a directory name"
+	elif [ -d $last ]; then
+		echo "\`$last' already exists"
+	else
+		mkdir $@ && cd $last
+	fi
+	}
+
+ipinfo () {
+	/usr/bin/curl -s "https://ipinfo.io/$1\?token=0b4b40014973a0"
+	}
+
 pastebin() {
     BASE_URL="https://pastebin.afraz.dev"
     local UAGENT="AFRAZ AHMED" 
