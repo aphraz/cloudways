@@ -11,7 +11,7 @@ for app in $(ls -l $APP_DIR/| awk '/^d/ {print $NF}');
 				sudo chmod 775 $APP_DIR/$app/private_html/script.sh
                 	else
        				echo "App: $app is WordPress but script.sh is not there. Creating and Setting Ownership."
-				touch $APP_DIR/$app/private_html/script.sh
+				sudo touch $APP_DIR/$app/private_html/script.sh
 				sudo chown $app:www-data $APP_DIR/$app/private_html/script.sh
 				sudo chmod 775 $APP_DIR/$app/private_html/script.sh
 			fi
