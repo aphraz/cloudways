@@ -5,6 +5,8 @@ readarray -t applist < <(ls -l $HOMEDIR/| awk '/^d/ {print $NF}')
 
 mkdir /var/cw/systeam/.vim-backup > /dev/null 2>&1
 cat <<- _EOF_ > /root/.vimrc
+set pastetoggle=<F3>
+set number
 set backup
 set backupdir=/var/cw/systeam/.vim-backup
 set writebackup
