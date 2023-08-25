@@ -251,9 +251,9 @@ reset-services () {
 
         echo "Restarting $service..."
         if systemctl restart $service; then
-            echo "Successfully restarted: $(tput bold)$(tput setaf 1)$service: $(tput sgr0)."
+            echo "Successfully restarted: $(tput bold)$(tput setaf 1)$service$(tput sgr0)."
         else
-            echo "Failed to restart: $(tput bold)$(tput setaf 1)$service: $(tput sgr0)."
+            echo "Failed to restart: $(tput bold)$(tput setaf 1)$service$(tput sgr0)."
             echo "Latest logs:"
             journalctl -u $service -n 10 --no-pager | grep -v '^-- Logs begin'
         fi
