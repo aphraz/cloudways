@@ -284,6 +284,8 @@ status-services () {
 }
 
 usage () {
+  num_cores=$(nproc)
+
   get_all_descendant_pids() {
     local parent_pid=$1
     local child_pids=$(pgrep -P $parent_pid)
@@ -320,7 +322,9 @@ usage () {
         fi
       done
       
-      
+      total_cpu=$(echo "$total_cpu / $num_cores" | bc -l)
+      total_cpu=$(printf "%.1f" $total_cpu)
+
       echo "$(tput bold)$(tput setaf 1)$service: $(tput sgr0)"
       systemctl status $service | awk '/Tasks|Memory/ {print $0}'
       echo "Open Files: $total_files"
