@@ -326,9 +326,9 @@ usage () {
       total_cpu=$(printf "%.1f" $total_cpu)
 
       echo "$(tput bold)$(tput setaf 1)$service: $(tput sgr0)"
-      systemctl status $service | awk '/Tasks|Memory/ {print $0}'
+      systemctl status $service | awk '/Tasks:|Memory/ {print $0}'
       echo "Open Files: $total_files"
-      echo "Total CPU Usage: $total_cpu%"
+      echo "CPU Usage: $total_cpu%"
     else
       echo "$(tput bold)$(tput setaf 1)$service: $(tput sgr0)Not running"
     fi
