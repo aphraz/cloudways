@@ -17,6 +17,20 @@ au BufWritePre * let &bex ='_at_' . strftime("%F-%H-%M")
 _EOF_
 
 
+backup() {
+    local src="$1"
+    local dest="${src}-backup"
+    
+    if [ -e "$src" ]; then
+        mv "$src" "$dest"
+        echo "Moved $src to $dest"
+    else
+        echo "$src does not exist."
+    fi
+}
+
+
+
 mkcd () {
 	last=$(eval "echo \$$#")
 	if [ ! -n "$last" ]; then
