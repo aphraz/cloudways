@@ -15,4 +15,3 @@ for (b in BOT) {printf("| %-22s| %-8d\n", b, BOT[b])
 if (x==10)break
 x++}
 }
-
