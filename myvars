@@ -10,10 +10,16 @@ nnoremap <F4> :set number!<CR>
 syntax on
 filetype on
 set backup
-set backupdir=/var/cw/systeam/.vim-backup
+set backupdir=/Users/afraz/.vim-backup
 set writebackup
 set backupcopy=yes
 au BufWritePre * let &bex ='_at_' . strftime("%F-%H-%M")
+set hlsearch
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set ignorecase
+set smartcase
 _EOF_
 
 
