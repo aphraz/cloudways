@@ -54,14 +54,13 @@ ipinfo () {
 
 pastebin() {
     BASE_URL="https://pastebin.afraz.dev"
-    local UAGENT="AFRAZ AHMED" 
+    #local UAGENT="AFRAZ AHMED" 
     case $1 in
         "get")
-            curl -s -A "'${UAGENT}'" "${BASE_URL}/$2"
+            curl -s "${BASE_URL}/$2"
             ;;
         "post")
-            content=$(cat)
-            curl -A "'${UAGENT}'" -X POST -Fc="$content" -Fe="$3" -Fn="$2" -Fs="$4" "${BASE_URL}"
+            ( curl -Fc=@- -Fe="$2" "${BASE_URL}" )
             ;;
         *)
             echo "Invalid command"
