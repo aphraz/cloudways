@@ -22,6 +22,24 @@ set ignorecase
 set smartcase
 _EOF_
 
+[[ -d /var/cw/systeam/.nano-backup ]] || mkdir /var/cw/systeam/.nano-backup > /dev/null 2>&1
+cat <<- _EOF_ > /root/.nanorc
+set backup
+set backupdir "/var/cw/systeam/.nano-backup"
+set linenumbers
+set tabsize 4
+_EOF_
+
+nano() {
+    for file in "$@"; do
+        if [[ -f "$file" && ! "$file" =~ ^- ]]; then
+            cp "$file" "/var/cw/systeam/.nano-backup/$(basename "$file")_$(date +%F-%H-%M-%S)"
+        fi
+    done
+    /bin/nano "$@"
+}
+
+
 
 backup() {
     local src="$1"
@@ -389,6 +407,6 @@ mv() {
 
 cleanup () {
 	rm -f /root/.vimrc
-	find /var/cw/systeam/.vim-backup/ -type f -mtime +30 -delete
+	find /var/cw/systeam/.{vim,nano}-backup/ -type f -mtime +30 -delete
 	}
 trap cleanup EXIT
