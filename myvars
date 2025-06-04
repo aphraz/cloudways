@@ -24,8 +24,6 @@ _EOF_
 
 [[ -d /var/cw/systeam/.nano-backup ]] || mkdir /var/cw/systeam/.nano-backup > /dev/null 2>&1
 cat <<- _EOF_ > /root/.nanorc
-set backup
-set backupdir "/var/cw/systeam/.nano-backup"
 set linenumbers
 set tabsize 4
 _EOF_
