@@ -373,7 +373,19 @@ do
         fi
 done
 [[ "$FOUND" == "1" ]] && /bin/rm ${array[*]} || /bin/rm "$@"
-        } 
+        }
+
+mv() {
+    echo "About to run: mv $@"
+    read -p "Continue? (y/N): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        /bin/mv "$@"
+    else
+        echo "mv command cancelled"
+        return 1
+    fi
+} 
 
 cleanup () {
 	rm -f /root/.vimrc
